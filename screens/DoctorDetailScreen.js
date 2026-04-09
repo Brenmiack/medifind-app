@@ -5,8 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const IP_SERVIDOR = '192.168.1.15'; 
-const API_URL = `http://${IP_SERVIDOR}:8000/api`;
+import { API_URL, IP_SERVIDOR } from './ip';
 
 export default function DoctorDetailScreen({ route, navigation }) {
   const { doctorId } = route.params; 

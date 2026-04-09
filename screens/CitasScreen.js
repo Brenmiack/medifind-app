@@ -5,8 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const IP_SERVIDOR = '192.168.1.15'; 
+import { API_URL, IP_SERVIDOR } from './ip';
 
 const corregirUrlFoto = (url) => {
   if (!url) return null;
@@ -22,7 +21,7 @@ export default function CitasScreen({ navigation }) {
   // Estados para el sistema de Reseñas
   const [modalResena, setModalResena] = useState(false);
   const [doctorAcalificar, setDoctorAcalificar] = useState(null);
-  const [citaIdActual, setCitaIdActual] = useState(null); // <-- ESTADO AGREGADO
+  const [citaIdActual, setCitaIdActual] = useState(null); 
   const [estrellas, setEstrellas] = useState(0);
   const [comentario, setComentario] = useState('');
   const [enviandoResena, setEnviandoResena] = useState(false);
@@ -30,7 +29,8 @@ export default function CitasScreen({ navigation }) {
   useEffect(() => {
     obtenerCitas();
   }, []);
-const confirmarCancelacion = (id) => {
+
+  const confirmarCancelacion = (id) => {
     Alert.alert(
       "Cancelar Cita",
       "¿Estás seguro de que deseas cancelar esta cita?",
@@ -42,7 +42,8 @@ const confirmarCancelacion = (id) => {
           onPress: async () => {
             try {
               const token = await AsyncStorage.getItem('token');
-              const response = await fetch(`http://${IP_SERVIDOR}:8000/api/app/cancelar-cita/${id}`, {
+              // 🌟 CORREGIDO: Usando API_URL
+              const response = await fetch(`${API_URL}/app/cancelar-cita/${id}`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
               });
@@ -60,7 +61,8 @@ const confirmarCancelacion = (id) => {
   const obtenerCitas = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch(`http://${IP_SERVIDOR}:8000/api/app/mis-citas`, {
+      // 🌟 CORREGIDO: Usando API_URL
+      const response = await fetch(`${API_URL}/app/mis-citas`, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
       });
@@ -82,14 +84,10 @@ const confirmarCancelacion = (id) => {
   // --- LÓGICA DE FILTRADO (PRÓXIMAS VS HISTORIAL) ---
   const obtenerCitasFiltradas = () => {
     return citas.filter(cita => {
-      // Normalizamos el texto a minúsculas para evitar errores
       const estadoActual = cita.estado?.toLowerCase();
-
       if (pestañaActiva === 'proximas') {
-        // En Próximas solo vemos lo que aún está por suceder o en espera
         return estadoActual === 'pendiente' || estadoActual === 'aceptada';
       } else {
-        // Al Historial se va todo lo que ya terminó, sea hoy o hace un mes
         return estadoActual === 'completada' || estadoActual === 'cancelada';
       }
     });
@@ -98,7 +96,7 @@ const confirmarCancelacion = (id) => {
   // --- FUNCIONES DE RESEÑAS ---
   const abrirModalCalificacion = (cita) => {
     setDoctorAcalificar(cita.doctor);
-    setCitaIdActual(cita.id); // Guardamos el ID de la cita
+    setCitaIdActual(cita.id); 
     setEstrellas(0);
     setComentario('');
     setModalResena(true);
@@ -111,8 +109,8 @@ const confirmarCancelacion = (id) => {
     setEnviandoResena(true);
     try {
       const token = await AsyncStorage.getItem('token');
-      // USAMOS /resenas (plural) para que coincida con tu ruta de Laravel
-      const response = await fetch(`http://${IP_SERVIDOR}:8000/api/app/resenas`, {
+      // 🌟 CORREGIDO: Usando API_URL
+      const response = await fetch(`${API_URL}/app/resenas`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -130,7 +128,7 @@ const confirmarCancelacion = (id) => {
       if (response.ok) {
         Alert.alert('¡Éxito!', 'Gracias por calificar.');
         setModalResena(false);
-        obtenerCitas(); // Recargamos para que el botón desaparezca
+        obtenerCitas(); 
       } else {
         const errorData = await response.json();
         Alert.alert('Error', JSON.stringify(errorData));
@@ -150,7 +148,6 @@ const confirmarCancelacion = (id) => {
       completada:{ bg: '#E3F2FD', txt: '#2196F3', label: 'Completada' }
     };
     
-    // Normalizamos el estado a minúsculas para comparar
     const estadoLimpio = item.estado?.toLowerCase();
     const estiloActual = coloresEstado[estadoLimpio] || coloresEstado.pendiente;
 
@@ -165,8 +162,6 @@ const confirmarCancelacion = (id) => {
             <Text style={styles.nombreDoctor} numberOfLines={1}>Dr. {item.doctor?.nombre || 'No disponible'}</Text>
             
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              
-              {/* 💬 NUEVO BOTÓN DE CHAT AQUÍ */}
               <TouchableOpacity 
                 style={{ marginRight: 12, padding: 2 }}
                 onPress={() => navigation.navigate('Chat', { 
@@ -187,32 +182,29 @@ const confirmarCancelacion = (id) => {
           <Text style={{color: 'red', fontSize: 10}}>Estado: {item.estado} | Reseña: {item.tiene_resena}</Text>
 
           <View style={{ marginTop: 10 }}>
-  {/* 1. BOTÓN CALIFICAR: Si es completada Y (tiene_resena es 0 o no existe) */}
-  {item.estado?.toLowerCase() === 'completada' && (item.tiene_resena == 0 || item.tiene_resena == null) && (
-    <TouchableOpacity 
-      style={styles.btnCalificar} 
-      onPress={() => abrirModalCalificacion(item)}
-    >
-      <Ionicons name="star" size={14} color="#FFF" style={{marginRight: 4}} />
-      <Text style={styles.textoBtnCalificar}>Calificar Consulta</Text>
-    </TouchableOpacity>
-  )}
+            {item.estado?.toLowerCase() === 'completada' && (item.tiene_resena == 0 || item.tiene_resena == null) && (
+              <TouchableOpacity 
+                style={styles.btnCalificar} 
+                onPress={() => abrirModalCalificacion(item)}
+              >
+                <Ionicons name="star" size={14} color="#FFF" style={{marginRight: 4}} />
+                <Text style={styles.textoBtnCalificar}>Calificar Consulta</Text>
+              </TouchableOpacity>
+            )}
 
-  {/* 2. TEXTO YA CALIFICADA: Solo si es exactamente 1 */}
-  {item.tiene_resena == 1 && item.estado?.toLowerCase() === 'completada' && (
-    <View style={styles.badgeResenaOk}>
-      <Ionicons name="checkmark-circle" size={14} color="#4CAF50" />
-      <Text style={styles.textoResenaOk}> Ya calificada</Text>
-    </View>
-  )}
+            {item.tiene_resena == 1 && item.estado?.toLowerCase() === 'completada' && (
+              <View style={styles.badgeResenaOk}>
+                <Ionicons name="checkmark-circle" size={14} color="#4CAF50" />
+                <Text style={styles.textoResenaOk}> Ya calificada</Text>
+              </View>
+            )}
 
-  {/* 3. BOTÓN CANCELAR: Solo para pendientes o aceptadas */}
-  {(item.estado?.toLowerCase() === 'pendiente' || item.estado?.toLowerCase() === 'aceptada') && (
-    <TouchableOpacity style={styles.btnCancelar} onPress={() => confirmarCancelacion(item.id)}>
-      <Text style={styles.textoBtnCancelar}>Cancelar</Text>
-    </TouchableOpacity>
-  )}
-</View>
+            {(item.estado?.toLowerCase() === 'pendiente' || item.estado?.toLowerCase() === 'aceptada') && (
+              <TouchableOpacity style={styles.btnCancelar} onPress={() => confirmarCancelacion(item.id)}>
+                <Text style={styles.textoBtnCancelar}>Cancelar</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
     );
@@ -226,7 +218,6 @@ const confirmarCancelacion = (id) => {
           <Image source={require('../assets/logo_medifind.png')} style={styles.logo} resizeMode="contain" />
         </View>
 
-        {/* PESTAÑAS */}
         <View style={styles.tabContainer}>
           <TouchableOpacity style={[styles.tab, pestañaActiva === 'proximas' && styles.tabActivo]} onPress={() => setPestañaActiva('proximas')}>
             <Text style={[styles.tabText, pestañaActiva === 'proximas' && styles.tabTextActivo]}>Próximas</Text>
@@ -266,7 +257,6 @@ const confirmarCancelacion = (id) => {
         )}
       </View>
 
-      {/* MODAL DE CALIFICACIÓN */}
       <Modal visible={modalResena} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -302,7 +292,6 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: '#FFFFFF',
-    // ESTA ES LA LÍNEA MÁGICA:
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 
   },
   mainContent: { flex: 1, paddingHorizontal: 16, paddingTop: 10 },

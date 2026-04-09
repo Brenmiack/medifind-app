@@ -13,7 +13,9 @@ import {
 import { Ionicons } from '@expo/vector-icons'; // <-- Importamos Ionicons para el ojito
 
 // 1. Asegúrate de que esta sea tu IP actual de la compu
-const API_URL = 'http://192.168.1.15:8000/api'; 
+// La ruta de importación ('../config') depende de dónde esté tu archivo.
+// Si tu pantalla está dentro de una carpeta "screens", usas '../' para salir un nivel.
+import { API_URL } from '../config';
 
 export default function LoginScreen({ navigation }) {
   

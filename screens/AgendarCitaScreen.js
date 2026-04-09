@@ -6,6 +6,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from './ip';
+
 
 LocaleConfig.locales['es'] = {
   monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
@@ -146,7 +148,7 @@ export default function AgendarCitaScreen({ route, navigation }) {
             try {
               const token = await AsyncStorage.getItem('token'); 
 
-              const response = await fetch('http://192.168.1.15:8000/api/app/citas', {
+              const response = await fetch(`${API_URL}/app/citas`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

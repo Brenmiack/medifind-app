@@ -7,6 +7,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker'; 
+import { API_URL } from './ip';
+
 
 export default function EditarPerfilScreen({ navigation }) {
 
@@ -30,7 +32,7 @@ export default function EditarPerfilScreen({ navigation }) {
   const obtenerDatosActuales = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch('http://192.168.1.15:8000/api/user', {
+      const response = await fetch(${API_URL}/user, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

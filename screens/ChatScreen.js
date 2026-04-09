@@ -5,9 +5,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL, IP_SERVIDOR } from './ip';
 
 
-const IP_SERVIDOR = '192.168.1.15'; 
 
 const corregirUrlChat = (url) => {
   if (!url) return null;
@@ -43,7 +43,7 @@ export default function ChatScreen({ route, navigation }) {
   const iniciarChat = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch(`http://${IP_SERVIDOR}:8000/api/app/chat/iniciar`, {
+      const response = await fetch(`${API_URL}/app/chat/iniciar`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

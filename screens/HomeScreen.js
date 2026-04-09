@@ -6,10 +6,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 //import * as Notifications from 'expo-notifications';
 //import * as Device from 'expo-device';
-
-
-const IP_SERVIDOR = '192.168.1.15';
-const API_URL = `http://${IP_SERVIDOR}:8000/api`;
+import { API_URL } from './ip';
 
 // --- 🎨 NUEVA FUNCIÓN: Obtener iniciales ---
 const obtenerIniciales = (nombre) => {

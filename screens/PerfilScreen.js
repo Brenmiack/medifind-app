@@ -41,7 +41,7 @@ export default function PerfilScreen({ navigation }) {
   const obtenerDatosUsuario = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch(`http://${IP_SERVIDOR}:8000/api/user`, {
+      const response = await fetch(`${API_URL}/user`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -32,7 +32,7 @@ export default function EditarPerfilScreen({ navigation }) {
   const obtenerDatosActuales = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch(${API_URL}/user, {
+      const response = await fetch(`${API_URL}/user`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -84,7 +84,7 @@ export default function EditarPerfilScreen({ navigation }) {
         type: 'image/jpeg',
       });
 
-      const response = await fetch('http://192.168.1.15:8000/api/app/perfil/foto', {
+      const response = await  fetch(`${API_URL}/app/perfil/foto`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -126,7 +126,7 @@ export default function EditarPerfilScreen({ navigation }) {
       };
       if (contrasena.trim() !== '') datosActualizados.password = contrasena;
 
-      const response = await fetch('http://192.168.1.15:8000/api/app/perfil/actualizar', {
+      const response = await fetch(`${API_URL}/app/perfil/actualizar`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(datosActualizados)

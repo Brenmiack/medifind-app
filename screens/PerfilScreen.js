@@ -16,11 +16,11 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL } from './ip';
+
 
 
 // Definimos la IP para que la función la pueda leer
-const IP_SERVIDOR = '192.168.1.15'; 
+import { API_URL, IP_SERVIDOR } from './ip';
 
 export default function PerfilScreen({ navigation }) {
   const [usuario, setUsuario] = useState(null);

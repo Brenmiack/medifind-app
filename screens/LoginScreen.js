@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons'; // <-- Importamos Ionicons para e
 // 1. Asegúrate de que esta sea tu IP actual de la compu
 // La ruta de importación ('../config') depende de dónde esté tu archivo.
 // Si tu pantalla está dentro de una carpeta "screens", usas '../' para salir un nivel.
-import { API_URL } from '../config';
+import { API_URL } from './ip';
 
 export default function LoginScreen({ navigation }) {
   

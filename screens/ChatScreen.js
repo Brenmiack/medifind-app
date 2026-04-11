@@ -73,6 +73,22 @@ export default function ChatScreen({ route, navigation }) {
       
       const data = await response.json();
       if (response.ok) setMensajes(data);
+
+      // 🌟 AQUÍ ESTÁ LA MAGIA PARA LAS PALOMITAS AZULES DEL DOCTOR 🌟
+      try {
+        // Le avisamos al servidor que el paciente ya vio los mensajes de este chat
+        await fetch(`http://${IP_SERVIDOR}:8000/api/app/chat/${idChat}/leer`, {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${token}`, 
+            'Accept': 'application/json' 
+          }
+        });
+      } catch (err) {
+        console.log("No se pudo marcar como leido", err);
+      }
+      // 🌟 FIN DE LA MAGIA 🌟
+
     } catch (error) {
       console.error("Error al cargar historial:", error);
     } finally {

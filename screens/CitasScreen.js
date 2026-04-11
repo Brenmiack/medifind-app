@@ -179,7 +179,7 @@ export default function CitasScreen({ navigation }) {
             </View>
           </View>
           <Text style={styles.textoDetalle}>{item.fecha} - {item.hora.substring(0, 5)}</Text>
-          <Text style={{color: 'red', fontSize: 10}}>Estado: {item.estado} | Reseña: {item.tiene_resena}</Text>
+          
 
           <View style={{ marginTop: 10 }}>
             {item.estado?.toLowerCase() === 'completada' && (item.tiene_resena == 0 || item.tiene_resena == null) && (
@@ -199,7 +199,8 @@ export default function CitasScreen({ navigation }) {
               </View>
             )}
 
-            {(item.estado?.toLowerCase() === 'pendiente' || item.estado?.toLowerCase() === 'aceptada') && (
+            
+              {item.estado?.toLowerCase() === 'pendiente' && (
               <TouchableOpacity style={styles.btnCancelar} onPress={() => confirmarCancelacion(item.id)}>
                 <Text style={styles.textoBtnCancelar}>Cancelar</Text>
               </TouchableOpacity>

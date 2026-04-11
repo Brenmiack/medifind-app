@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 
-const API_URL = 'http://192.168.1.15:8000/api'; 
+const API_URL = 'http://192.168.1.22:8000/api'; 
 
 export default function RegisterScreen({ navigation }) {
   

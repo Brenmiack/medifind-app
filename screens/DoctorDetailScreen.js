@@ -11,21 +11,14 @@ export default function DoctorDetailScreen({ route, navigation }) {
   const { doctorId } = route.params; 
   const [doctor, setDoctor] = useState(null);
   const [cargando, setCargando] = useState(true);
+  const [mostrarTodasResenas, setMostrarTodasResenas] = useState(false); // ✅ AGREGA ESTA LÍNEA
 
   const corregirUrlFoto = (url) => {
     if (!url) return null;
     return url.trim().replace('localhost', IP_SERVIDOR).replace('127.0.0.1', IP_SERVIDOR);
   };
 
-  useEffect(() => {
-    fetch(`${API_URL}/app/doctores/${doctorId}`)
-      .then(res => res.json())
-      .then(data => {
-        setDoctor(data);
-        setCargando(false);
-      })
-      .catch(err => console.error(err));
-  }, [doctorId]);
+  
 
   // Función mágica para leer arreglos o JSONs de la base de datos y convertirlos en burbujas
   const renderBurbujas = (datos) => {
@@ -64,6 +57,23 @@ export default function DoctorDetailScreen({ route, navigation }) {
     });
   };
 
+const [resenas, setResenas] = useState([]);
+
+useEffect(() => {
+  fetch(`${API_URL}/app/doctores/${doctorId}`)
+    .then(res => res.json())
+    .then(data => { setDoctor(data); setCargando(false); })
+    .catch(err => console.error(err));
+
+  fetch(`${API_URL}/app/doctores/${doctorId}/resenas`)
+    .then(res => {
+      if (!res.ok) return [];
+      return res.json();
+    })
+    .then(data => setResenas(Array.isArray(data) ? data : []))
+    .catch(err => console.error(err));
+}, [doctorId]);
+
   // 🌟 FUNCIÓN CORREGIDA PARA ABRIR EL MAPA CON ETIQUETA 🌟
   const abrirNavegacionGPS = () => {
     const { latitud, longitud, direccion, nombre } = doctor;
@@ -99,6 +109,7 @@ export default function DoctorDetailScreen({ route, navigation }) {
 
   return (
     <ScrollView style={styles.container}>
+  
       <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} color="#0066CC" />
       </TouchableOpacity>
@@ -118,6 +129,35 @@ export default function DoctorDetailScreen({ route, navigation }) {
         />
         <Text style={styles.name}>Dr. {doctor.nombre}</Text>
         <Text style={styles.specialty}>{doctor.especialidad?.nombre || 'Medicina General'}</Text>
+
+{/* ✅ CÉDULA */}
+{doctor.cedula && (
+  <Text style={{ fontSize: 13, color: '#999', marginBottom: 6 }}>
+    Cédula: {doctor.cedula}
+  </Text>
+)}
+
+
+
+        {/* PROMEDIO DE RESEÑAS */}
+{doctor.calificacion_promedio > 0 && (
+  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+    {[1,2,3,4,5].map(i => (
+      <Ionicons 
+        key={i} 
+        name={i <= Math.round(doctor.calificacion_promedio) ? "star" : "star-outline"} 
+        size={18} 
+        color="#F59E0B" 
+      />
+    ))}
+    <Text style={{ marginLeft: 6, color: '#666', fontSize: 14 }}>
+      {parseFloat(doctor.calificacion_promedio).toFixed(1)} ({doctor.total_resenas || 0} reseñas)
+    </Text>
+  </View>
+)}
+
+
+
         
         {/* TIPO DE CONSULTA */}
         {doctor.tipo_consulta && (
@@ -193,6 +233,39 @@ export default function DoctorDetailScreen({ route, navigation }) {
           <Text style={styles.description}>No hay horarios registrados.</Text>
         )}
       </View>
+             {/* RESEÑAS */}
+{resenas.length > 0 && (
+  <View style={{ paddingHorizontal: 25, marginBottom: 10 }}>
+    <Text style={styles.sectionTitle}>Reseñas</Text>
+
+    {(mostrarTodasResenas ? resenas : resenas.slice(0, 3)).map((r, i) => (
+      <View key={i} style={{ backgroundColor: '#F8F9FA', borderRadius: 10, padding: 14, marginBottom: 10 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+          <Text style={{ fontWeight: 'bold', color: '#333' }}>{r.paciente_nombre || 'Paciente'}</Text>
+          <Text style={{ color: '#F59E0B' }}>{'★'.repeat(r.estrellas)}{'☆'.repeat(5 - r.estrellas)}</Text>
+        </View>
+        <Text style={{ color: '#555', fontSize: 13 }}>{r.comentario}</Text>
+        {r.respuesta ? (
+          <Text style={{ color: '#7C3AED', fontSize: 12, marginTop: 6 }}>
+            💬 Dr: {r.respuesta}
+          </Text>
+        ) : null}
+      </View>
+    ))}
+
+    {resenas.length > 3 && (
+      <TouchableOpacity
+        onPress={() => setMostrarTodasResenas(!mostrarTodasResenas)}
+        style={{ alignItems: 'center', paddingVertical: 10 }}
+      >
+        <Text style={{ color: '#0066CC', fontWeight: 'bold', fontSize: 14 }}>
+          {mostrarTodasResenas ? 'Ver menos ▲' : `Ver todas (${resenas.length}) ▼`}
+        </Text>
+      </TouchableOpacity>
+    )}
+  </View>
+)}
+
 
       <TouchableOpacity 
         style={styles.bookBtn} 
@@ -204,6 +277,7 @@ export default function DoctorDetailScreen({ route, navigation }) {
         })}
       >
         <Text style={styles.bookBtnText}>Agendar Cita</Text>
+ 
       </TouchableOpacity>
     </ScrollView>
   );

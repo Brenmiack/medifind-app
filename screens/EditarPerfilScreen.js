@@ -17,7 +17,7 @@ export default function EditarPerfilScreen({ navigation }) {
   const [materno, setMaterno] = useState('');
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
-  const [direccion, setDireccion] = useState('');
+  
   const [telefono, setTelefono] = useState('');
   const [fotoUrl, setFotoUrl] = useState(null); 
   
@@ -43,7 +43,7 @@ export default function EditarPerfilScreen({ navigation }) {
         setMaterno(data.materno || '');
         setCorreo(data.email || ''); 
         setTelefono(data.telefono || '');
-        setDireccion(data.direccion || '');
+        
         setFotoUrl(data.foto_url || null); 
       }
     } catch (error) {
@@ -122,7 +122,7 @@ export default function EditarPerfilScreen({ navigation }) {
       const token = await AsyncStorage.getItem('token');
       const datosActualizados = {
         nombre: nombre.trim(), paterno: paterno.trim(), materno: materno.trim(),
-        telefono: telefono.trim(), direccion: direccion.trim()
+        telefono: telefono.trim()
       };
       if (contrasena.trim() !== '') datosActualizados.password = contrasena;
 
@@ -212,8 +212,7 @@ export default function EditarPerfilScreen({ navigation }) {
             <Text style={styles.label}>Nueva Contraseña (Opcional)</Text>
             <TextInput style={styles.input} placeholder="Dejar en blanco para conservar" secureTextEntry={true} value={contrasena} onChangeText={setContrasena} />
 
-            <Text style={styles.label}>Dirección</Text>
-            <TextInput style={styles.input} placeholder="Tu dirección" value={direccion} onChangeText={setDireccion} />
+           
 
             <Text style={styles.label}>Teléfono</Text>
             <TextInput style={styles.input} keyboardType="numeric" maxLength={10} value={telefono} onChangeText={(t) => setTelefono(t.replace(/[^0-9]/g, ''))} />
